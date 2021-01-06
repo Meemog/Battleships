@@ -1,3 +1,5 @@
+import re
+
 class Ship:
     def __init__(self, shipType, length, timesHit, isDestroyed = False, symbol = "X"):
         self.shipType = shipType
@@ -88,9 +90,18 @@ class Board:
     def PlaceShip(self, x, y, ship, rotation):
         for i in range(ship.GetLength()):
             if rotation == "Horizontal":
+                if self.board[7-y][x+i].GetShip() != None:
+                    return False
+            else:
+                if self.board[7-(y+i)][x].GetShip() != None:
+                    return False
+
+        for i in range(ship.GetLength()):
+            if rotation == "Horizontal":
                 self.board[7-y][x+i] = Location(x, y+i, ship)
             else:
                 self.board[7-(y+i)][x] = Location(x+i, y, ship)
+        return True
 
 
 class Player:
@@ -101,20 +112,55 @@ class Player:
         self.ships.extend((AircraftCarrier(0), Destroyer(0), Destroyer(0), Battleship(0), Battleship(0), Battleship(0), Submarine(0)))
     
     def PlaceShip(self, x, y, orientation, shipNo):
-        self.board.PlaceShip(x,y, self.ships[shipNo], orientation)
-        self.board.DisplayBoard()
+        x = self.board.PlaceShip(x,y, self.ships[shipNo], orientation)
+        return x
+        
 
 p1 = Player(input("Name: "))
 
+
 for i in range(7):
-    positionStr = input("Where would you like your " + p1.ships[i].GetShipType() +" (length: " +str(p1.ships[i].GetLength()) + ") to go on the x axis e.g. 'A1':")
 
-    x = ord(positionStr[0].upper()) - 65
-    y = int(positionStr[1])-1
+    p1.board.DisplayBoard()
+    
+    check = False
 
-    choice = input("Would you like it to be \n1: Horizontal\n2: Vertical")
-    if choice == "1":
-        orientation = "Horizontal"
-    else:
-        orientation = "Vertical"
-    p1.PlaceShip(x, y, orientation, i)
+    while check == False:
+        valid = False
+        while valid == False:
+            positionStr = input("Where would you like your " + p1.ships[i].GetShipType() +" (length: " +str(p1.ships[i].GetLength()) + ") to go on the x axis e.g. 'A1':")
+
+            if re.search("[A-Ha-h][1-8]", positionStr) == None:
+                print("Enter a value between A1 and H8")
+            else:
+                valid = True
+        
+        
+        x = ord(positionStr[0].upper()) - 65
+        y = int(positionStr[1])-1
+
+        valid = False
+        while valid == False:
+            choice = input("Would you like it to be \n1: Horizontal\n2: Vertical")
+            if choice == "1":
+                orientation = "Horizontal"
+                valid = True
+            elif choice == "2":
+                orientation = "Vertical"
+                valid = True
+            else:
+                print("Please enter 1 or 2")
+
+        if choice == "1":
+            if (x + p1.ships[i].GetLength()) > 8:
+                print("That ship doesn't fit there")
+            else:
+                check = True
+        elif choice == "2":
+            if (y + p1.ships[i].GetLength()) > 8:
+                print("That ship doesn't fit there")
+            else:
+                check = True
+    if p1.PlaceShip(x, y, orientation, i) == False:
+        check = False
+        print("That ship doesn't fit there")
