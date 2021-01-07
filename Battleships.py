@@ -2,12 +2,12 @@ import re
 import random
 
 class Ship:
-    def __init__(self, shipType, length, timesHit, isDestroyed = False, symbol = "X"):
+    def __init__(self, shipType, length, timesHit, symbol = "X"):
         self.shipType = shipType
         self.length = length
         self.timesHit = timesHit
-        self.isDestroyed = isDestroyed
         self.symbol = symbol
+        self.isDestroyed = False
 
     def GetShipType(self):
         return self.shipType
@@ -70,38 +70,38 @@ class Location:
 class Board:
     def __init__(self):
         self.board = []
-        for i in range(8):
+        for i in range(10):
             row = []
-            for j in range(8):
+            for j in range(10):
                 location = Location(i, j)
                 row.append(location)
             self.board.append(row)
     
     def DisplayBoard(self):
-        for i in range(8):
+        for i in range(10):
             arr = []
             for item in self.board[i]:
                 if item.GetShip() == None:
                     arr.append("~")
                 else:
                     arr.append(item.GetShip().GetSymbol())
-            print(str(8-i) + "  %-2s %-2s %-2s %-2s %-2s %-2s %-2s %-2s " % (arr[0], arr[1], arr[2], arr[3], arr[4], arr[5], arr[6], arr[7]))
-        print("   %-2s %-2s %-2s %-2s %-2s %-2s %-2s %-2s " % ("A", "B", "C", "D", "E", "F", "G", "H"))
+            print("%2s  %-2s %-2s %-2s %-2s %-2s %-2s %-2s %-2s %-2s %-2s " % (str(10-i), arr[0], arr[1], arr[2], arr[3], arr[4], arr[5], arr[6], arr[7], arr[8], arr[9]))
+        print("%2s  %-2s %-2s %-2s %-2s %-2s %-2s %-2s %-2s %-2s %-2s " % ("", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J"))
     
     def PlaceShip(self, x, y, ship, rotation):
         for i in range(ship.GetLength()):
             if rotation == "Horizontal":
-                if self.board[7-y][x+i].GetShip() != None:
+                if self.board[9-y][x+i].GetShip() != None:
                     return False
             else:
-                if self.board[7-(y+i)][x].GetShip() != None:
+                if self.board[9-(y+i)][x].GetShip() != None:
                     return False
 
         for i in range(ship.GetLength()):
             if rotation == "Horizontal":
-                self.board[7-y][x+i] = Location(x, y+i, ship)
+                self.board[9-y][x+i] = Location(x, y+i, ship)
             else:
-                self.board[7-(y+i)][x] = Location(x+i, y, ship)
+                self.board[9-(y+i)][x] = Location(x+i, y, ship)
         return True
 
 
@@ -138,8 +138,8 @@ if boardPos == "1":
             while valid == False:
                 positionStr = input("Where would you like your " + p1.ships[i].GetShipType() +" (length: " +str(p1.ships[i].GetLength()) + ") to go on the x axis e.g. 'A1':")
 
-                if re.search("[A-Ha-h][1-8]", positionStr) == None:
-                    print("Enter a value between A1 and H8")
+                if re.search("[A-Ja-j][1-10]", positionStr) == None:
+                    print("Enter a value between A1 and J10")
                 else:
                     valid = True
             
@@ -160,33 +160,35 @@ if boardPos == "1":
                     print("Please enter 1 or 2")
 
             if choice == "1":
-                if (x + p1.ships[i].GetLength()) > 8:
+                if (x + p1.ships[i].GetLength()) > 10:
                     print("That ship doesn't fit there")
                 else:
                     check = True
             elif choice == "2":
-                if (y + p1.ships[i].GetLength()) > 8:
+                if (y + p1.ships[i].GetLength()) > 10:
                     print("That ship doesn't fit there")
                 else:
                     check = True
         if p1.PlaceShip(x, y, orientation, i) == False:
             check = False
             print("That ship doesn't fit there")
+    p1.board.DisplayBoard()
+
 else:
     for i in range(7):
         valid = False
         while valid == False:
-            x = random.randint(0, 7)
-            y = random.randint(0, 7)
+            x = random.randint(0, 9)
+            y = random.randint(0, 9)
             orientation = random.choice(["Horizontal", "Vertical"])
 
             valid = True
 
             if orientation == "Horizontal":
-                if (x + p1.ships[i].GetLength()) > 8:
+                if (x + p1.ships[i].GetLength()) > 10:
                     valid = False
             elif orientation == "Vertical":
-                if (y + p1.ships[i].GetLength()) > 8:
+                if (y + p1.ships[i].GetLength()) > 10:
                     valid = False
             if valid == True:
                 if p1.PlaceShip(x, y, orientation, i) == False:
