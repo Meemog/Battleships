@@ -1,4 +1,5 @@
 import re
+import random
 
 class Ship:
     def __init__(self, shipType, length, timesHit, isDestroyed = False, symbol = "X"):
@@ -113,54 +114,81 @@ class Player:
     
     def PlaceShip(self, x, y, orientation, shipNo):
         x = self.board.PlaceShip(x,y, self.ships[shipNo], orientation)
-        return x
-        
+        return x 
 
 p1 = Player(input("Name: "))
 
+valid = False
+while valid == False:
+    boardPos = input("Would you like to\n1: place ships manually or \n2: have the computer do it for you")
+    if boardPos == "1" or boardPos == "2":
+        valid = True
+    else:
+        print("Please enter either '1' or '2'")
 
-for i in range(7):
+if boardPos == "1":
+    for i in range(7):
 
-    p1.board.DisplayBoard()
-    
-    check = False
-
-    while check == False:
-        valid = False
-        while valid == False:
-            positionStr = input("Where would you like your " + p1.ships[i].GetShipType() +" (length: " +str(p1.ships[i].GetLength()) + ") to go on the x axis e.g. 'A1':")
-
-            if re.search("[A-Ha-h][1-8]", positionStr) == None:
-                print("Enter a value between A1 and H8")
-            else:
-                valid = True
+        p1.board.DisplayBoard()
         
-        
-        x = ord(positionStr[0].upper()) - 65
-        y = int(positionStr[1])-1
-
-        valid = False
-        while valid == False:
-            choice = input("Would you like it to be \n1: Horizontal\n2: Vertical")
-            if choice == "1":
-                orientation = "Horizontal"
-                valid = True
-            elif choice == "2":
-                orientation = "Vertical"
-                valid = True
-            else:
-                print("Please enter 1 or 2")
-
-        if choice == "1":
-            if (x + p1.ships[i].GetLength()) > 8:
-                print("That ship doesn't fit there")
-            else:
-                check = True
-        elif choice == "2":
-            if (y + p1.ships[i].GetLength()) > 8:
-                print("That ship doesn't fit there")
-            else:
-                check = True
-    if p1.PlaceShip(x, y, orientation, i) == False:
         check = False
-        print("That ship doesn't fit there")
+
+        while check == False:
+            valid = False
+            while valid == False:
+                positionStr = input("Where would you like your " + p1.ships[i].GetShipType() +" (length: " +str(p1.ships[i].GetLength()) + ") to go on the x axis e.g. 'A1':")
+
+                if re.search("[A-Ha-h][1-8]", positionStr) == None:
+                    print("Enter a value between A1 and H8")
+                else:
+                    valid = True
+            
+            
+            x = ord(positionStr[0].upper()) - 65
+            y = int(positionStr[1])-1
+
+            valid = False
+            while valid == False:
+                choice = input("Would you like it to be \n1: Horizontal\n2: Vertical")
+                if choice == "1":
+                    orientation = "Horizontal"
+                    valid = True
+                elif choice == "2":
+                    orientation = "Vertical"
+                    valid = True
+                else:
+                    print("Please enter 1 or 2")
+
+            if choice == "1":
+                if (x + p1.ships[i].GetLength()) > 8:
+                    print("That ship doesn't fit there")
+                else:
+                    check = True
+            elif choice == "2":
+                if (y + p1.ships[i].GetLength()) > 8:
+                    print("That ship doesn't fit there")
+                else:
+                    check = True
+        if p1.PlaceShip(x, y, orientation, i) == False:
+            check = False
+            print("That ship doesn't fit there")
+else:
+    for i in range(7):
+        valid = False
+        while valid == False:
+            x = random.randint(0, 7)
+            y = random.randint(0, 7)
+            orientation = random.choice(["Horizontal", "Vertical"])
+
+            valid = True
+
+            if orientation == "Horizontal":
+                if (x + p1.ships[i].GetLength()) > 8:
+                    valid = False
+            elif orientation == "Vertical":
+                if (y + p1.ships[i].GetLength()) > 8:
+                    valid = False
+            if valid == True:
+                if p1.PlaceShip(x, y, orientation, i) == False:
+                    valid = False
+    p1.board.DisplayBoard()
