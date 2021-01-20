@@ -116,17 +116,7 @@ class Player:
         x = self.board.PlaceShip(x,y, self.ships[shipNo], orientation)
         return x 
 
-p1 = Player(input("Name: "))
-
-valid = False
-while valid == False:
-    boardPos = input("Would you like to\n1: place ships manually or \n2: have the computer do it for you")
-    if boardPos == "1" or boardPos == "2":
-        valid = True
-    else:
-        print("Please enter either '1' or '2'")
-
-if boardPos == "1":
+def ManualPlace(p1):
     for i in range(7):
 
         p1.board.DisplayBoard()
@@ -172,9 +162,9 @@ if boardPos == "1":
         if p1.PlaceShip(x, y, orientation, i) == False:
             check = False
             print("That ship doesn't fit there")
-    p1.board.DisplayBoard()
 
-else:
+def CompPlace(p1):
+
     for i in range(7):
         valid = False
         while valid == False:
@@ -194,3 +184,23 @@ else:
                 if p1.PlaceShip(x, y, orientation, i) == False:
                     valid = False
     p1.board.DisplayBoard()
+
+p1 = Player(input("Name: "))
+com = Player("Com")
+
+valid = False
+while valid == False:
+    boardPos = input("Would you like to\n1: place ships manually or \n2: have the computer do it for you")
+    if boardPos == "1" or boardPos == "2":
+        valid = True
+    else:
+        print("Please enter either '1' or '2'")
+
+if boardPos == "1":
+    ManualPlace(p1)
+
+else:
+    CompPlace(p1)
+    
+p1.board.DisplayBoard()
+CompPlace(com)
