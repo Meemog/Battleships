@@ -57,6 +57,7 @@ class Location:
         self.x = x
         self.y = y
         self.ship = ship
+        self.hasBeenHit = False
     
     def GetX(self):
         return self.x
@@ -66,6 +67,13 @@ class Location:
     
     def GetShip(self):
         return self.ship
+
+    def GetHit(self):
+        return self.hasBeenHit
+
+    def SetHit(self, value):
+        self.hasBeenHit = value
+
 
 class Board:
     def __init__(self):
@@ -103,7 +111,9 @@ class Board:
             else:
                 self.board[9-(y+i)][x] = Location(x+i, y, ship)
         return True
-
+    
+    def GetShip(self, x, y):
+        return self.board[9-y][x]
 
 class Player:
     def __init__(self, name):
@@ -115,6 +125,18 @@ class Player:
     def PlaceShip(self, x, y, orientation, shipNo):
         x = self.board.PlaceShip(x,y, self.ships[shipNo], orientation)
         return x 
+    
+    def Attack(self, x, y, target):
+        ship = target.board.GetShip(x, y)
+        if ship.hasBeenHit == True:
+            return "AlreadyHit"
+        else:
+            ship.SetHit(True)
+            if ship.GetShip() != None:           
+                ship.GetShip().SetTimesHit(ship.GetShip().GetTimesHit() - 1)
+                return "Hit"
+            else:
+                return "Miss"
 
 def ManualPlace(p1):
     for i in range(7):
@@ -204,3 +226,6 @@ else:
     
 p1.board.DisplayBoard()
 CompPlace(com)
+
+print(p1.Attack(1, 1, com))
+print(p1.Attack(1, 1, com))
